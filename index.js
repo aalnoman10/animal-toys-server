@@ -5,8 +5,15 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000
 
+const corsConfig = {
+    origin: '*',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE']
+}
+
 app.use(express.json())
-app.use(cors())
+app.use(cors(corsConfig))
+app.options("", cors(corsConfig))
 
 const uri = `mongodb+srv://${process.env.NAME}:${process.env.PASS}@cluster0.hrkpt8c.mongodb.net/?retryWrites=true&w=majority`;
 
