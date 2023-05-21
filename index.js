@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000
 
@@ -45,6 +45,45 @@ async function run() {
             const result = await toysCollection.insertOne(body)
             res.send(result)
         })
+
+        app.delete('/toys/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await toysCollection.deleteOne(query)
+            res.send(result)
+        })
+
+
+        // single toys 
+        app.get('/toys/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+
+            const result = await toysCollection.findOne(query)
+            res.send(result)
+        })
+
+        app.put('/toys/:id', async (req, res) => {
+            const id = req.params.id
+            const body = req.body
+            const filter = { _id: new ObjectId(id) };
+
+            const options = {
+                upsert: true
+            }
+
+            const updatedToy = {
+                $set: {
+                    price: body.price,
+                    quantity: body.quantity,
+                    description: body.description
+                }
+            }
+
+            const result = await toysCollection.updateOne(filter, updatedToy, options)
+            res.send(result)
+        })
+
 
         //  lions , tigers & zebras get for home page
         app.get('/lions', async (req, res) => {
